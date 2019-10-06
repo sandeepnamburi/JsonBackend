@@ -2,9 +2,7 @@ package com.jsoncomparator.demo;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -30,6 +28,16 @@ public class AWSGateway implements AmazonGateway {
             bucketNames.add(b.getName());
         }
         return bucketNames;
+    }
+
+    public List<String> getObjects(String bucket) throws Exception{
+        if(!client.doesBucketExist(bucket))
+            throw new Exception("No such bucket exists");
+        List<String> listOfObjectNames = new ArrayList<>();
+        for(S3ObjectSummary summary : client.listObjects(bucket).getObjectSummaries()) {
+            listOfObjectNames.add(summary.getKey());
+        }
+        return listOfObjectNames;
     }
 
     public String getJson(String bucketName, String fileName) throws Exception{

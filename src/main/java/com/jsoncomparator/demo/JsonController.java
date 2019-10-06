@@ -3,6 +3,7 @@ package com.jsoncomparator.demo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -15,6 +16,16 @@ public class JsonController {
     @ResponseBody
     public List<String> getBucketList() {
         return gateway.getDirectories();
+    }
+
+    @GetMapping(path = "/listObjects")
+    @ResponseBody
+    public List<String> getObjectList(@RequestParam(name = "bucket") String bucket) {
+        try {
+            return gateway.getObjects(bucket);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     @GetMapping(path = "/getFile")
