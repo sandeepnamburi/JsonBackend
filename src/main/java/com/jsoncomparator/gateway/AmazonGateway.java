@@ -1,4 +1,4 @@
-package com.jsoncomparator;
+package com.jsoncomparator.gateway;
 
 import java.util.List;
 
