@@ -1,5 +1,6 @@
 package com.jsoncomparator;
 
+import com.jsoncomparator.util.JSONFlattenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,9 @@ import java.util.List;
 @RestController
 public class JsonController {
     @Autowired
-    AWSGateway gateway;
+    private AWSGateway gateway;
+    @Autowired
+    private JSONFlattenUtil flattener;
 
     @GetMapping(path = "/buckets")
     @ResponseBody
@@ -35,7 +38,8 @@ public class JsonController {
         try {
             log.info(bucket.trim());
             log.info(file.trim());
-            return gateway.getJson(bucket, file);
+            String jsonFile = gateway.getJson(bucket, file);
+            return flattener.flattenJsonString(jsonFile);
         } catch (Exception e) {
             return e.getMessage();
         }

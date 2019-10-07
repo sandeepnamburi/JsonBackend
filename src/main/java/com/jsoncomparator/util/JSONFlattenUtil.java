@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 public class JSONFlattenUtil {
     public static final String NESTED_PROPERTY_SEPARATOR = "-";
     private Gson gson;
