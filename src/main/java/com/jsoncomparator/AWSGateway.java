@@ -30,18 +30,14 @@ public class AWSGateway implements AmazonGateway {
         return bucketNames;
     }
 
-    public List<String> getObjectKeysInBucket(String bucketName) throws IllegalArgumentException {
-        if (!client.doesBucketExist(bucketName))
-            throw new IllegalArgumentException("No such bucket exists");
-        List<String> objectKeys = new ArrayList<>();
-        ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(bucketName);
-        ListObjectsV2Result result;
-        result = client.listObjectsV2(req);
-        //TODO: Deal with pagination case
-        for (S3ObjectSummary objectSummary : result.getObjectSummaries()) {
-            objectKeys.add(objectSummary.getKey());
+    public List<String> getObjects(String bucket) throws Exception{
+        if(!client.doesBucketExist(bucket))
+            throw new Exception("No such bucket exists");
+        List<String> listOfObjectNames = new ArrayList<>();
+        for(S3ObjectSummary summary : client.listObjects(bucket).getObjectSummaries()) {
+            listOfObjectNames.add(summary.getKey());
         }
-        return objectKeys;
+        return listOfObjectNames;
     }
 
     public String getJson(String bucketName, String fileName) throws IllegalArgumentException, IOException {
