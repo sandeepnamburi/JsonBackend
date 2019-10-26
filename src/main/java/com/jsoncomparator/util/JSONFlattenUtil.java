@@ -1,9 +1,6 @@
 package com.jsoncomparator.util;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.util.Map;
 
@@ -18,22 +15,38 @@ public class JSONFlattenUtil {
     }
 
     /**
-     * Only flattens nested objects, does not manipulate arrays.
-     * If the root object is an array or at any point a property is an array, it skips over that.
+     * Flattens a Json Array string.
+     * Iterates over each JsonObject in array and flattens the object.
+     * <p>
+     * If the string is not a json array or an element of json array is not a json object, throws exception.
      *
-     * @param originalJson the json to be flattened
-     * @return flattened json string.
+     * @param originalJson the json of an array to be flattened
+     * @return flattened json string where each element of the array has been flattened.
      */
-    public String flattenJsonString(String originalJson) {
+    public String flattenJsonArrayString(String originalJson) {
         JsonElement root = jsonParser.parse(originalJson);
-        if (!root.isJsonObject()) {
-            return originalJson;
+        if (!root.isJsonArray()) {
+            throw new IllegalArgumentException("Expected a string representing a JSON array.");
         }
-        JsonObject flattenedObject = new JsonObject();
-        recFlatten(flattenedObject, root.getAsJsonObject(), "");
-        return gson.toJson(flattenedObject);
+        JsonArray rootArray = root.getAsJsonArray();
+        JsonArray flattenedArray = new JsonArray();
+        for (JsonElement elem : rootArray) {
+            if (!elem.isJsonObject()) {
+                throw new IllegalArgumentException(String.format("Each element of the root array is " +
+                        "expected to be a JsonObject. Found %s", elem.toString()));
+            }
+            JsonObject flattenedObject = new JsonObject();
+            recFlatten(flattenedObject, elem.getAsJsonObject(), "");
+            flattenedArray.add(flattenedObject);
+        }
+        return gson.toJson(flattenedArray);
     }
 
+    /**
+     * Only flattens nested objects, does not manipulate arrays.
+     * If the root object has a property that has an array as a value,
+     * the array is ignored as it is and not parsed.
+     */
     private JsonObject recFlatten(JsonObject flattenedObject, JsonObject nestedObject, String property_prefix) {
         for (Map.Entry<String, JsonElement> entry : nestedObject.entrySet()) {
             if (entry.getValue().isJsonObject()) {

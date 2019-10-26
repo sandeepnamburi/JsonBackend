@@ -14,44 +14,58 @@ public class JSONFlattenUtilTest {
         propSeparator = JSONFlattenUtil.NESTED_PROPERTY_SEPARATOR;
     }
 
-    private void testWithExpectedJson(String expectedJson, String originalJson) {
-        Assert.assertEquals(expectedJson, jsonFlattenUtil.flattenJsonString(originalJson));
+    private void testWithExpectedJsonArray(String expectedJson, String originalJson) {
+        Assert.assertEquals(expectedJson, jsonFlattenUtil.flattenJsonArrayString(originalJson));
+    }
+
+    private void testWithExpectedJsonObject(String expectedJson, String originalJson) {
+        //converting expected and original json objects to json arrays of single element
+        String expectedJsonArray = "[" + expectedJson + "]";
+        String originalJsonArray = "[" + originalJson + "]";
+        testWithExpectedJsonArray(expectedJsonArray, originalJsonArray);
     }
 
     @Test
     public void testEmptyJson() {
-        testWithExpectedJson("", "");
+        testWithExpectedJsonObject("", "");
     }
 
     @Test
-    public void testFlattenedJson() {
+    public void testFlattenedJsonObject() {
         //{a: 1, b : 2}
         String json = "{\"a\":1,\"b\":2}";
-        testWithExpectedJson(json, json);
+        testWithExpectedJsonObject(json, json);
     }
 
     @Test
-    public void testNestedJson() {
+    public void testFlatteningJsonArray() {
+        //[{a: 1}, {b : 2}]
+        String json = "[{\"a\":1},{\"b\":2}]";
+        testWithExpectedJsonArray(json, json);
+    }
+
+    @Test
+    public void testNestedJsonObject() {
         //{a: 1, b : {c: 1, d: 2}}
         String originalJson = "{\"a\":1,\"b\":{\"c\":1,\"d\":2}}";
         String flattenedJson = String.format("{\"a\":1,\"b%sc\":1,\"b%sd\":2}", propSeparator, propSeparator);
-        testWithExpectedJson(flattenedJson, originalJson);
+        testWithExpectedJsonObject(flattenedJson, originalJson);
     }
 
     @Test
-    public void testNestedMultipleLevelsJson() {
+    public void testNestedMultipleLevelsJsonObject() {
         //{a: 1, b : {c: 1, d: 2}}
         String originalJson = "{\"a\":1,\"b\":{\"c\":1,\"d\":{e:3}}}";
         String flattenedJson = String.format("{\"a\":1,\"b%sc\":1,\"b%sd%se\":3}", propSeparator, propSeparator, propSeparator);
-        testWithExpectedJson(flattenedJson, originalJson);
+        testWithExpectedJsonObject(flattenedJson, originalJson);
     }
 
     @Test
-    public void testNestedJsonWithSamePropertyName() {
+    public void testNestedJsonObjectWithSamePropertyName() {
         //{a: 1, b : {a: 1, b: 2}}
         String originalJson = "{\"a\":1,\"b\":{\"a\":1,\"b\":2}}";
         String flattenedJson = String.format("{\"a\":1,\"b%sa\":1,\"b%sb\":2}", propSeparator, propSeparator);
-        testWithExpectedJson(flattenedJson, originalJson);
+        testWithExpectedJsonObject(flattenedJson, originalJson);
     }
 
     @Test
@@ -59,6 +73,6 @@ public class JSONFlattenUtilTest {
         // {a: 1, b: {}} -> {a: 1}
         String originalJson = "{\"a\":1,\"b\":{}}";
         String flattenedJson = "{\"a\":1}";
-        testWithExpectedJson(flattenedJson, originalJson);
+        testWithExpectedJsonObject(flattenedJson, originalJson);
     }
 }
