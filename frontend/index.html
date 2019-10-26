@@ -1,9 +1,85 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Example</title>
-    </head>
-    <body>
-        <p>This is an example of a simple HTML page with one paragraph.</p>
-    </body>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js">
+  </script>
+
+<style>
+    table {
+      border-collapse: collapse;
+    }
+
+    th {
+      border: 2px solid black;
+      background-color: lightblue;
+      padding: 1em;
+    }
+
+    td {
+      padding: 2em;
+      border: 2px solid black;
+    }
+</style>
+
+<body ng-app="myApp" ng-controller="ListController" >
+    <h1>JSON Compare</h1>
+    <p><b>If the JSON object is unique from the previous column box, the box will be highlighted in yellow.
+      <br>Otherwise, it will appear without a highlight.</b></p>
+    <br>
+    <table border=1>
+        <thead>
+            <tr>
+                <th>JSON Stack 1</th>
+                <th>JSON Stack 2</th>
+            </tr>
+        </thead>
+        <tr ng-repeat="x in names">
+          <td style="background-color: white;" ng-show="names[$index-1].Key==x.Key">{{ x.Key }}</td>
+          <td style="background-color: #ffffb3;" ng-show="names[$index-1].Key!=x.Key">{{ x.Key }}</td>
+          <td style="background-color: white;" ng-show="names[$index-1].Value==x.Value">{{ x.Value }}</td>
+          <td style="background-color: #ffffb3;" ng-show="names[$index-1].Value!=x.Value">{{ x.Value }}</td>
+        </tr>
+    </table>
+
+</body>
+<script>
+    var app = angular.module('myApp', []);
+    app.controller(
+      'ListController', function($scope) {
+
+        var sampleJSON = {
+          obj: {
+           "more text": "another example"
+          },
+          obj2: {
+           "yet more text": "yet another example"
+          }
+        };
+
+        var sampleJSON2 = {
+          text: "jargon data",
+          example: "Capital One"
+        };
+
+        $scope.names = [{
+                Key: sampleJSON,
+                Value: 'example23',
+            }, {
+                Key: sampleJSON,
+                Value: 'example343',
+            }, {
+                Key: 'example',
+                Value: sampleJSON2,
+            }, {
+                Key: 'example2',
+                Value: sampleJSON2,
+            }, {
+                Key: 'example2',
+                Value: "example343"
+            }
+          ];
+        });
+
+</script>
+
 </html>
