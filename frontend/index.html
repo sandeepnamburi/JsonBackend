@@ -1,9 +1,221 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Example</title>
-    </head>
-    <body>
-        <p>This is an example of a simple HTML page with one paragraph.</p>
-    </body>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js">
+  </script>
+
+<style>
+    table {
+      border-collapse: collapse;
+    }
+
+    th {
+      border: 2px solid black;
+      background-color: lightblue;
+      padding: 1em;
+    }
+
+    td {
+      padding: 2em;
+      border: 2px solid black;
+    }
+
+    body  {
+	     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+     }
+
+    .hide {
+        max-height: 0 !important;
+    }
+
+    .dropdown{
+    	border: 0.1em solid black;
+    	width: 10em;
+    	margin-bottom: 1em;
+    }
+
+    .dropdown .title{
+    	margin: .3em .3em .3em .3em;
+    	width: 100%;
+    }
+
+    .dropdown .title .fa-angle-right{
+    	float: right;
+    	margin-right: .7em;
+    	transition: transform .3s;
+    }
+
+    .dropdown .menu{
+    	transition: max-height .5s ease-out;
+    	max-height: 20em;
+    	overflow: hidden;
+    }
+
+    .dropdown .menu .option{
+    	margin: .3em .3em .3em .3em;
+    	margin-top: 0.3em;
+    }
+
+    .dropdown .menu .option:hover{
+    	background: rgba(0,0,0,0.2);
+    }
+
+    .pointerCursor:hover{
+    	cursor: pointer;
+    }
+
+    .rotate-90{
+    	transform: rotate(90deg);
+    }
+
+</style>
+
+<body ng-app="myApp" ng-controller="ListController" >
+    <h1>JSON Compare</h1>
+    <p><b>If the JSON object is unique from the previous column box, the box will be highlighted in yellow.
+      <br>Otherwise, it will appear without a highlight.</b></p>
+    <p> Select a result for the first JSON column. </p>
+
+	<div class='dropdown'>
+
+
+		<div class='title pointerCursor'>Select an option. <i class="fa fa-angle-right"></i></div>
+
+		<div class='menu pointerCursor hide'>
+			<div class='option' id='option1'>Stack 1</div>
+			<div class='option' id='option2'>Stack 2</div>
+			<div class='option' id='option3'>Stack 3</div>
+			<div class='option' id='option4'>Stack 4</div>
+		</div>
+
+	</div>
+
+	<span id='result'>The result is: </span>
+
+    <br>
+    <br>
+    <table border=1>
+        <thead>
+            <tr>
+                <th>Key 1</th>
+                <th>Key 2</th>
+            </tr>
+        </thead>
+        <tr ng-repeat="x in names">
+          <td style="background-color: white;" ng-show="names[$index-1].Key==x.Key">{{ x.Key }}</td>
+          <td style="background-color: #ffff80;" ng-show="names[$index-1].Key!=x.Key">{{ x.Key }}</td>
+          <td style="background-color: white;" ng-show="names[$index-1].Value==x.Value">{{ x.Value }}</td>
+          <td style="background-color: #ffff80;" ng-show="names[$index-1].Value!=x.Value">{{ x.Value }}</td>
+        </tr>
+    </table>
+
+</body>
+<script>
+
+    var app = angular.module('myApp', []);
+    app.controller(
+      'ListController', function($scope) {
+
+        var sampleJSON = {
+          obj: {
+           "more text": "another example"
+          },
+          obj2: {
+           "yet more text": "yet another example"
+          }
+        };
+
+        var sampleJSON2 = {
+          text: "jargon data",
+          example: "Capital One"
+        };
+
+        $scope.names = [{
+                Key: sampleJSON,
+                Value: 'example23',
+            }, {
+                Key: sampleJSON,
+                Value: 'example343',
+            }, {
+                Key: 'example',
+                Value: sampleJSON2,
+            }, {
+                Key: 'example2',
+                Value: sampleJSON2,
+            }, {
+                Key: 'example2',
+                Value: "example343"
+            }
+          ];
+        });
+
+
+      function toggleClass(elem,className){
+        if (elem.className.indexOf(className) !== -1){
+          elem.className = elem.className.replace(className,'');
+        }
+        else{
+          elem.className = elem.className.replace(/\s+/g,' ') + 	' ' + className;
+        }
+
+        return elem;
+      }
+
+      function toggleDisplay(elem){
+        const curDisplayStyle = elem.style.display;
+
+        if (curDisplayStyle === 'none' || curDisplayStyle === ''){
+          elem.style.display = 'block';
+        }
+        else{
+          elem.style.display = 'none';
+        }
+
+      }
+
+      function toggleMenuDisplay(e){
+        const dropdown = e.currentTarget.parentNode;
+        const menu = dropdown.querySelector('.menu');
+        const icon = dropdown.querySelector('.fa-angle-right');
+
+        toggleClass(menu,'hide');
+        toggleClass(icon,'rotate-90');
+      }
+
+      function handleOptionSelected(e){
+        toggleClass(e.target.parentNode, 'hide');
+
+        const id = e.target.id;
+        const newValue = e.target.textContent + ' ';
+        const titleElem = document.querySelector('.dropdown .title');
+        const icon = document.querySelector('.dropdown .title .fa');
+
+
+        titleElem.textContent = newValue;
+        titleElem.appendChild(icon);
+
+        //trigger custom event
+        document.querySelector('.dropdown .title').dispatchEvent(new Event('change'));
+          //setTimeout is used so transition is properly shown
+        setTimeout(() => toggleClass(icon,'rotate-90',0));
+      }
+
+      function handleTitleChange(e){
+        const result = document.getElementById('result');
+
+        result.innerHTML = 'The result is: ' + e.target.textContent;
+      }
+
+      //get elements
+      const dropdownTitle = document.querySelector('.dropdown .title');
+      const dropdownOptions = document.querySelectorAll('.dropdown .option');
+
+      //bind listeners to these elements
+      dropdownTitle.addEventListener('click', toggleMenuDisplay);
+
+      dropdownOptions.forEach(option => option.addEventListener('click',handleOptionSelected));
+
+      document.querySelector('.dropdown .title').addEventListener('change',handleTitleChange);
+</script>
+
 </html>
