@@ -1,9 +1,138 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Example</title>
-    </head>
-    <body>
-        <p>This is an example of a simple HTML page with one paragraph.</p>
-    </body>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js">
+  </script>
+
+<style>
+
+    table {
+      border-collapse: collapse;
+    }
+
+    th {
+      border: 2px solid black;
+      background-color: lightblue;
+      padding: 1em;
+    }
+
+    td {
+      padding: 2em;
+      border: 2px solid black;
+    }
+
+    body  {
+	     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+     }
+
+    .dropbtn {
+       background-color: #3498DB;
+       color: white;
+       padding: 16px;
+       font-size: 16px;
+       border: none;
+       cursor: pointer;
+     }
+
+     .dropdown {
+       position: relative;
+       display: inline-block;
+     }
+
+     .whiteClass  {
+       background-color: white;
+     }
+
+     .yellowClass {
+       background-color: #ffff80;
+     }
+
+</style>
+
+<body ng-app="myApp" ng-controller="ListController" >
+    <h1>JSON Compare</h1>
+    <p><b>If the JSON object is unique from the previous column box, the box will be highlighted in yellow.
+      <br>Otherwise, it will appear without a highlight.</b></p>
+
+    <div class="dropdown">
+      <label for="bucket">Select a bucket: </label>
+        <select id="bucket" class="dropbtn">
+          <option ng-repeat="y in buckets">{{y}}</option>
+        </select>
+    </div>
+
+    <div class="dropdown">
+      <label for="file">&nbsp;&nbsp;&nbsp;&nbsp;Select a file: </label>
+      <select id="file" class="dropbtn">
+        <option ng-repeat="y in fileNames">{{y}}</option>
+      </select>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <table border=1>
+        <thead>
+            <tr>
+                <th ng-repeat="y in keys">
+                  {{y}}
+                </th>
+            </tr>
+        </thead>
+        <tr ng-repeat="row in names">
+            <td ng-repeat="cell in row" ng-class="{whiteClass: names[$parent.$index-1][keys[$index]]==cell || $parent.$index == 0, yellowClass: names[$parent.$index-1][keys[$index]]!=cell}">
+              {{ cell }}
+            </td>
+        </tr>
+    </table>
+
+</body>
+<script>
+
+    var app = angular.module('myApp', []);
+    app.controller(
+      'ListController', function($scope) {
+
+        var sampleJSON2 = [{
+                Key1: 'sampleJSON',
+                Key2: 's',
+            }, {
+                Key1: 'sampleJSON',
+                Key2: 's1',
+            }, {
+                Key1: 'example',
+                Key2: 's1',
+            }, {
+                Key1: 'example',
+                Key2: 's2',
+            }, {
+                Key1: 'example343',
+                Key2: 's2',
+            }
+          ];
+
+        $scope.names = sampleJSON2;
+
+        $scope.keys = Object.keys(sampleJSON2[0]);
+
+        $scope.buckets = ["bucket1", "bucket2", "bucket3"];
+
+        $scope.fileNames = ["file1", "file2"];
+
+        });
+
+        $('#bucket').on('change', function() {
+          var s = $(this).val();
+          console.log(s);
+          $('p .bucket').text(s);
+        });
+
+        $('#file').on('change', function() {
+          var s = $(this).val();
+          console.log(s);
+          $('p .file').text(s);
+        });
+
+</script>
+
 </html>
